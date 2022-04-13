@@ -1,6 +1,6 @@
 Name:		fermilab-conf_sssd
 Version:	1.1
-Release:	1%{?dist}
+Release:	1.1%{?dist}
 Summary:	Configure SSSD to permit FNAL Kerberos authentication
 
 Group:		Fermilab
@@ -11,7 +11,7 @@ Source0:	%{name}.tar.xz
 
 BuildArch:	noarch
 Requires:	sssd sssd-krb5
-Requires(post):	authselect coreutils
+Requires(post):	authselect coreutils util-linux-core
 
 # Drop with EL10
 Obsoletes:	fermilab-conf_kerberos-local-passwords
@@ -67,13 +67,19 @@ fi
 systemctl enable sssd.service
 systemctl condrestart sssd.service
 
-authselect select sssd
+authselect current | grep -q sssd
 if [[ $? -ne 0 ]]; then
-    echo "" >&2
-    echo "authselect select sssd    failed" >&2
-    echo "" >&2
-    echo "Please run manually" >&2
-    echo "" >&2
+  authselect select sssd
+  if [[ $? -ne 0 ]]; then
+      echo "" >&2
+      echo "authselect select sssd : failed" >&2
+      echo "" >&2
+      echo "Please run manually" >&2
+      echo "" >&2
+      echo "authselect select sssd : failed" | logger -p auth.err
+  else
+      echo "authselect select sssd : complete" | logger -p auth.notice
+  fi
 fi
 
 systemctl is-active sssd.service >/dev/null 2>&1
@@ -82,6 +88,7 @@ if [[ $? -ne 0 ]]; then
     echo "SSSD not running, you may need to run" >&2
     echo "systemctl start sssd.service" >&2
     echo "" >&2
+    echo "sssd failed to start" | logger -p auth.err
 fi
 
 
@@ -91,6 +98,9 @@ fi
 %attr(0700,root,root) %dir %{_sysconfdir}/sssd/FNAL
 
 %changelog
+* Wed Apr 13 2022 Pat Riehecky <riehecky@fnal.gov> 1.1-1.1
+- Add more logging about state
+
 * Wed Mar 16 2022 Pat Riehecky <riehecky@fnal.gov> 1.1-1
 - Drop EL7 support
 
