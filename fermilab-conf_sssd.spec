@@ -1,6 +1,6 @@
 Name:		fermilab-conf_sssd
 Version:	1.1
-Release:	1.1%{?dist}
+Release:	2%{?dist}
 Summary:	Configure SSSD to permit FNAL Kerberos authentication
 
 Group:		Fermilab
@@ -35,8 +35,6 @@ passwords to be used in addition to any local passwords.
 %{__install} -D 24-FNAL-domain-enable.conf %{buildroot}/%{_sysconfdir}/sssd/conf.d/24-FNAL-domain-enable.conf
 %{__install} -D 25-FNAL-domain.conf %{buildroot}/%{_sysconfdir}/sssd/conf.d/25-FNAL-domain.conf
 
-%{__mkdir_p} %{buildroot}/%{_sysconfdir}/sssd/FNAL/
-
 %post -p /bin/bash
 
 %if 0%{?rhel} < 9 && 0%{?fedora} < 31
@@ -51,18 +49,6 @@ if [[ -f /%{_sysconfdir}/sssd/sssd.conf ]]; then
     fi
 fi
 %endif
-
-if [[ ! -e %{_sysconfdir}/sssd/FNAL/passwd ]]; then
-    touch %{_sysconfdir}/sssd/FNAL/passwd
-    chown root:root %{_sysconfdir}/sssd/FNAL/passwd
-    chmod 600 %{_sysconfdir}/sssd/FNAL/passwd
-fi
-
-if [[ ! -e %{_sysconfdir}/sssd/FNAL/group ]]; then
-    touch %{_sysconfdir}/sssd/FNAL/group
-    chown root:root %{_sysconfdir}/sssd/FNAL/group
-    chmod 600 %{_sysconfdir}/sssd/FNAL/group
-fi
 
 systemctl enable sssd.service
 systemctl condrestart sssd.service
@@ -95,9 +81,11 @@ fi
 %files
 %defattr(0644,root,root,0755)
 %config %attr(0600,root,root) %{_sysconfdir}/sssd/conf.d/*.conf
-%attr(0700,root,root) %dir %{_sysconfdir}/sssd/FNAL
 
 %changelog
+* Fri Apr 22 2022 Pat Riehecky <riehecky@fnal.gov> 1.1-2
+- Per admin request, don't make the stub files, leave a note about how
+
 * Wed Apr 13 2022 Pat Riehecky <riehecky@fnal.gov> 1.1-1.1
 - Add more logging about state
 
