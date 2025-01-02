@@ -13,8 +13,9 @@ BuildArch:	noarch
 Requires:	sssd sssd-krb5
 Requires(post):	authselect coreutils util-linux-core
 
-# Drop with EL10
+%if 0%{?rhel} < 10
 Obsoletes:	fermilab-conf_kerberos-local-passwords
+%endif
 
 %description
 The default configuration of Enterprise Linux is to require local passwords,
