@@ -1,6 +1,6 @@
 Name:		fermilab-conf_sssd
-Version:	1.1
-Release:	2%{?dist}
+Version:	1.2
+Release:	1%{?dist}
 Summary:	Configure SSSD to permit FNAL Kerberos authentication
 
 Group:		Fermilab
@@ -12,6 +12,8 @@ Source0:	%{name}.tar.xz
 BuildArch:	noarch
 Requires:	sssd sssd-krb5
 Requires(post):	authselect coreutils util-linux-core
+
+Suggests:	nss-altfiles
 
 %if 0%{?rhel} < 10
 Obsoletes:	fermilab-conf_kerberos-local-passwords
@@ -88,6 +90,10 @@ fi
 %endif
 
 %changelog
+* Fri May 30 2025 Pat Riehecky <riehecky@fnal.gov> 1.2-1
+* Switch to files proxy lib by default, leave note about altfiles
+* Setup permissions for EL10 sssd
+
 * Fri Apr 22 2022 Pat Riehecky <riehecky@fnal.gov> 1.1-2
 - Per admin request, don't make the stub files, leave a note about how
 
