@@ -81,7 +81,11 @@ fi
 
 %files
 %defattr(0644,root,root,0755)
+%if 0%{?rhel} < 10
 %config %attr(0600,root,root) %{_sysconfdir}/sssd/conf.d/*.conf
+%else
+%config %attr(0640,root,sssd) %{_sysconfdir}/sssd/conf.d/*.conf
+%endif
 
 %changelog
 * Fri Apr 22 2022 Pat Riehecky <riehecky@fnal.gov> 1.1-2
